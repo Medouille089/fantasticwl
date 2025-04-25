@@ -4,7 +4,7 @@ const session = require("express-session");
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const path = require("path");
-const fetch = require("node-fetch"); // ⚠️ Assure-toi que ce module est installé
+const fetch = require("node-fetch");
 
 const app = express();
 
@@ -37,7 +37,7 @@ passport.use(new DiscordStrategy({
 
     if (!response.ok) {
       console.error("❌ Erreur récupération membre : ", await response.text());
-      return done(null, profile); // on continue, mais sans les rôles
+      return done(null, profile);
     }
 
     const guildMember = await response.json();
@@ -50,12 +50,22 @@ passport.use(new DiscordStrategy({
   }
 }));
 
-app.get('/login', passport.authenticate('discord'));
+// 👇 Bloque toute requête vers / sans /login
+app.get('/', (req, res) => {
+  res.status(403).send("Accès interdit. Veuillez vous connecter via /login.");
+});
 
-app.get('/callback',
-  passport.authenticate('discord', { failureRedirect: '/' }),
-  (req, res) => res.redirect('/protected')
+// 👇 Protection anti accès direct à /callback
+app.get('/callback', (req, res, next) => {
+  if (!req.query.code) {
+    return res.status(403).send('Accès direct interdit.');
+  }
+  next();
+}, passport.authenticate('discord', { failureRedirect: '/' }),
+(req, res) => res.redirect('/protected')
 );
+
+app.get('/login', passport.authenticate('discord'));
 
 function checkAuth(req, res, next) {
   if (!req.isAuthenticated()) return res.redirect('/login');
@@ -71,7 +81,8 @@ app.get('/protected', checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.use(express.static('public'));
+// 👇 Sert les fichiers statiques (CSS/JS/images) uniquement pour les routes valides
+app.use('/public', express.static('public'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🌐 Serveur en ligne sur http://localhost:${PORT}`));
