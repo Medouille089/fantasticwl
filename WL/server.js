@@ -4,6 +4,7 @@ const session = require("express-session");
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const path = require("path");
+const fetch = require("node-fetch"); // ⚠️ Assure-toi que ce module est installé
 
 const app = express();
 
@@ -24,8 +25,29 @@ passport.use(new DiscordStrategy({
   clientSecret: process.env.DISCORD_CLIENT_SECRET,
   callbackURL: process.env.DISCORD_CALLBACK_URL,
   scope: ['identify', 'guilds', 'guilds.members.read']
-}, (accessToken, refreshToken, profile, done) => {
-  process.nextTick(() => done(null, profile));
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    const guildId = process.env.GUILD_ID;
+
+    const response = await fetch(`https://discord.com/api/users/@me/guilds/${guildId}/member`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error("❌ Erreur récupération membre : ", await response.text());
+      return done(null, profile); // on continue, mais sans les rôles
+    }
+
+    const guildMember = await response.json();
+    profile.guild_member = guildMember;
+
+    return done(null, profile);
+  } catch (err) {
+    console.error("❌ Erreur dans la stratégie Discord :", err);
+    return done(err, null);
+  }
 }));
 
 app.get('/login', passport.authenticate('discord'));
