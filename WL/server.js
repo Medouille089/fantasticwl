@@ -52,13 +52,13 @@ passport.use(new DiscordStrategy({
 
 // 👇 Bloque toute requête vers / sans /login
 app.get('/', (req, res) => {
-  res.status(403).send("Accès interdit. Veuillez vous connecter via /login.");
+  res.status(403).send("Accès interdit.");
 });
 
 // 👇 Protection anti accès direct à /callback
 app.get('/callback', (req, res, next) => {
   if (!req.query.code) {
-    return res.status(403).send('Accès direct interdit.');
+    return res.status(403).send('Accès interdit.');
   }
   next();
 }, passport.authenticate('discord', { failureRedirect: '/' }),
