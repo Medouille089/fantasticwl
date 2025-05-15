@@ -242,12 +242,18 @@
 
             const [h, m] = time.split(":"), [eh, em] = endTime.split(":");
 
-            const legal = Array.from(legalList.children).map(li => li.textContent).join("\n");
-            const illegal = Array.from(illegalList.children).map(li => li.textContent).join("\n");
+            const legalItems = Array.from(legalList.children).map(li => li.textContent);
+            const illegalItems = Array.from(illegalList.children).map(li => li.textContent);
+            const legal = legalItems.join("\n");
+            const illegal = illegalItems.join("\n");
+
+            const legalLabel = legalItems.length > 1 ? "Projets légaux disponibles" : "Projet légal disponible";
+            const illegalLabel = illegalItems.length > 1 ? "Projets illégaux disponibles" : "Projet illégal disponible";
+
 
             const now = new Date().toLocaleString("fr-FR");
 
-            preview.innerHTML = `**Bonsoir à tous !**\n\n🎟️ **PROCHAINE SESSION DE WHITELIST le ${formatDate(date)} de ${formatHour(h, m)} à ${formatHour(eh, em)}**\n\n🔻 **Conditions pour passer sa WL** :\n> - Avoir 17ans et +\n> - Avoir un bon micro\n> - Être sur PC et non sur téléphone portable\n> - Avoir pris connaissance du #📄 règlement\n> - Avoir une idée de votre background\n> - Dans votre pseudo avoir [Job ou projet] devant votre nom et prénom RP\n> *Exemple: [LSPD] Nom Prénom RP - [Ballas] Nom Prénom RP*\n\n🟢 \`Projet légal disponible\` :\n ${legal}\n\n🟣 \`Projet illégal disponible :\`\n ${illegal}\n`;
+            preview.innerHTML = `**Bonsoir à tous !**\n\n🎟️ **PROCHAINE SESSION DE WHITELIST le ${formatDate(date)} de ${formatHour(h, m)} à ${formatHour(eh, em)}**\n\n🔻 **Conditions pour passer sa WL** :\n> - Avoir 17ans et +\n> - Avoir un bon micro\n> - Être sur PC et non sur téléphone portable\n> - Avoir pris connaissance du #📄 règlement\n> - Avoir une idée de votre background\n> - Dans votre pseudo avoir [Job ou projet] devant votre nom et prénom RP\n> *Exemple: [LSPD] Nom Prénom RP - [Ballas] Nom Prénom RP*\n\n🟢 \`${legalLabel}\` :\n ${legal}\n\n🟣 \`${illegalLabel} :\`\`\n ${illegal}\n`;
         }
 
         async function sendToDiscord() {
@@ -257,10 +263,15 @@
             const endTime = document.getElementById("endTimeInput").value;
             const [h, m] = time.split(":"), [eh, em] = endTime.split(":");
 
-            const legal = Array.from(legalList.children).map(li => li.textContent).join("\n");
-            const illegal = Array.from(illegalList.children).map(li => li.textContent).join("\n");
+            const legalItems = Array.from(legalList.children).map(li => li.textContent);
+            const illegalItems = Array.from(illegalList.children).map(li => li.textContent);
+            const legal = legalItems.join("\n");
+            const illegal = illegalItems.join("\n");
 
-            const description = `**Bonsoir à tous !**\n\n> <:fantastic:1181627146653937785> **PROCHAINE SESSION DE WHITELIST le ${formatDate(date)} de ${formatHour(h, m)} à ${formatHour(eh, em)}**\n\n> <:arrow_pink:1182713864152944742> **__Conditions pour passer sa WL__** :\n> - Avoir 17ans et +\n> - Avoir un bon micro\n> - Être sur PC et non sur téléphone portable\n> - Avoir pris connaissance du <#1364038726560518156>\n> - Avoir une idée de votre background\n> - Dans votre pseudo avoir [Job ou projet] devant votre nom et prénom RP\n> *Exemple: [LSPD] Nom Prénom RP - [Ballas] Nom Prénom RP*\n\n> :green_circle: \`Projet légal disponible :\`\n ${legal}\n\n> :purple_circle: \`Projet illégal disponible :\`\n ${illegal}\n`;
+            const legalLabel = legalItems.length > 1 ? "Projets légaux disponibles" : "Projet légal disponible";
+            const illegalLabel = illegalItems.length > 1 ? "Projets illégaux disponibles" : "Projet illégal disponible";
+
+            const description = `**Bonsoir à tous !**\n\n> <:fantastic:1181627146653937785> **PROCHAINE SESSION DE WHITELIST le ${formatDate(date)} de ${formatHour(h, m)} à ${formatHour(eh, em)}**\n\n> <:arrow_pink:1182713864152944742> **__Conditions pour passer sa WL__** :\n> - Avoir 17ans et +\n> - Avoir un bon micro\n> - Être sur PC et non sur téléphone portable\n> - Avoir pris connaissance du <#1364038726560518156>\n> - Avoir une idée de votre background\n> - Dans votre pseudo avoir [Job ou projet] devant votre nom et prénom RP\n> *Exemple: [LSPD] Nom Prénom RP - [Ballas] Nom Prénom RP*\n\n> :green_circle: \`${legalLabel} :\`\n ${legal}\n\n> :purple_circle: \`${illegalLabel} :\`\n ${illegal}\n`;
 
             const embed = {
                 color: 0xFF0000,
